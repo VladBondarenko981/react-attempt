@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./LogInComponent.module.css";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { login } from "../../../store/userSlice";
+import { login } from "../../../store/userActions";
 
 type Props = {};
 
@@ -18,11 +18,9 @@ export const LogInComponent = (props: Props) => {
       password: password,
     };
     dispatch(login(loginPayload));
-    console.log(isAuto);
     setTimeout(() => {
       window.location.href = "http://localhost:3000/";
     }, 2000);
-    console.log(isAuto);
   };
   return (
     <div className={styles.main}>

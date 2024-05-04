@@ -1,20 +1,33 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  loadDigitalWeather,
+  loadGeoWeather,
+  loadWeatherFiveDays,
+  loadWeatherNow,
+} from "./weatherActions";
+import { act } from "react-dom/test-utils";
+import { useAppDispatch } from "../hooks/hooks";
 
-type WeatherNow = {
+export type WeatherNow = {
   nameCity: string;
   temperature: number;
   icon: string;
 };
 
-type WeatherFiveDays = {
+export type WeatherFiveDays = {
   day: string[];
-  temperature: string[];
+  temperature: number[];
   icon: string[];
 };
 
-type DigitalWeather = {
-  data: {}[];
+export type DigitalWeather = {
+  data: {
+    icon: string;
+    temperature: number;
+    rain: string;
+    humidity: number;
+    wind: number;
+  }[];
 };
 
 type Weather = {
@@ -49,31 +62,6 @@ const initialState: WeatherState = {
   error: null,
 };
 
-export const loadWeatherNow = createAsyncThunk<
-  WeatherNow,
-  string,
-  { rejectValue: string }
->(
-  "weather/loadWeatherNow",
-  async function (cityName: string, { rejectWithValue }) {
-    const body = { value: cityName };
-    const response = await fetch("http://localhost:5000/weather/weather", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      return rejectWithValue("Can't load Weather.");
-    }
-
-    const data = (await response.json()) as WeatherNow;
-    return data;
-  }
-);
-
 const weatherSlice = createSlice({
   name: "weather",
   initialState,
@@ -89,6 +77,50 @@ const weatherSlice = createSlice({
         state.weather.weatherData.temperature = action.payload.temperature;
         state.weather.weatherData.nameCity = action.payload.nameCity;
         state.weather.weatherData.icon = action.payload.icon;
+      })
+      .addCase(loadWeatherFiveDays.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadWeatherFiveDays.fulfilled, (state, action) => {
+        state.loading = false;
+        state.weather.weatherFiveDays.temperature = action.payload.temperature;
+        state.weather.weatherFiveDays.icon = action.payload.icon;
+        let date = new Date();
+        let day = date.getDate();
+        let month = date.getMonth();
+        let daysInMonth = new Date(date.getFullYear(), month + 1, 0).getDate();
+        const days = [];
+        for (let i = 0; i < 5; i++) {
+          let forecastDay = day + i;
+          if (forecastDay > daysInMonth) {
+            forecastDay -= daysInMonth;
+            month++;
+            if (month > 11) {
+              month = 0;
+            }
+            daysInMonth = new Date(date.getFullYear(), month + 1, 0).getDate();
+          }
+          days.push(`${forecastDay}.${month + 1}`);
+        }
+
+        state.weather.weatherFiveDays.day = days;
+      })
+      .addCase(loadDigitalWeather.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadDigitalWeather.fulfilled, (state, action) => {
+        state.loading = false;
+        state.weather.digitalWeather.data = action.payload.data;
+      })
+      .addCase(loadGeoWeather.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadGeoWeather.fulfilled, (state, action) => {
+        state.loading = false;
+        state.weather.weatherData.nameCity = action.payload;
       });
   },
 });

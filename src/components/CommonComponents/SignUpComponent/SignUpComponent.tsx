@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./SignUpComponent.module.css";
 import { useAppSelector, useAppDispatch } from "../../../hooks/hooks";
-import { registration } from "../../../store/userSlice";
+import { registration } from "../../../store/userActions";
 import { mistakePassword } from "../../../store/userSlice";
 
 type Props = {};

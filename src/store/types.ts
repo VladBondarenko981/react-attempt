@@ -16,3 +16,13 @@ export type loginData = {
   email: string;
   message: string;
 };
+
+export type GeoData = {
+  longitude: number;
+  latitude: number;
+};
+
+export type FavouriteCities = {
+  city: string;
+  email: string;
+};

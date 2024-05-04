@@ -1,8 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginData, registrationPayload } from "./types";
-import { loginPayload } from "./types";
-import { arch } from "os";
+import {
+  registration,
+  login,
+  addFavouriteCities,
+  loadCities,
+  loadPhotoUser,
+  changePhotoUser,
+  changeUserEmail,
+  changeUserPassword,
+} from "./userActions";
+import { act } from "react-dom/test-utils";
 
 type User = {
   password: string;
@@ -10,6 +17,7 @@ type User = {
   cities: string[];
   isAuthorized: boolean;
   message: string;
+  photoUser: string;
 };
 
 type UserState = {
@@ -25,69 +33,11 @@ const initialState: UserState = {
     cities: [],
     isAuthorized: false,
     message: "",
+    photoUser: "",
   },
   loading: false,
   error: null,
 };
-
-export const registration = createAsyncThunk<
-  string,
-  registrationPayload,
-  { rejectValue: string }
->(
-  "user/registration",
-  async function (registrationPayload, { rejectWithValue }) {
-    const user = {
-      emailUser: registrationPayload.email,
-      passwordUser: registrationPayload.password,
-    };
-
-    const response = await fetch("http://localhost:5000/auth/registration", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-
-    if (!response.ok) {
-      return rejectWithValue("Can't regist user. Server error.");
-    }
-
-    const data = await response.text();
-    if (data === "success") {
-      return "You have successfully registered";
-    } else {
-      return "Registration failed, please try again";
-    }
-  }
-);
-
-export const login = createAsyncThunk<
-  loginData,
-  loginPayload,
-  { rejectValue: string }
->("user/login", async function (loginPayload, { rejectWithValue }) {
-  const user = {
-    emailUser: loginPayload.email,
-    passwordUser: loginPayload.password,
-  };
-
-  const response = await fetch("http://localhost:5000/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(user),
-  });
-
-  if (!response.ok) {
-    return rejectWithValue("Can't regist user. Server error.");
-  }
-
-  const data = await response.json();
-  return data;
-});
 
 const userSlice = createSlice({
   name: "user",
@@ -98,16 +48,25 @@ const userSlice = createSlice({
     },
     logOut(state, action: PayloadAction<boolean>) {
       state.user.isAuthorized = action.payload;
+      localStorage.setItem("isAuthorized", "false");
+      localStorage.setItem("password", "");
+      localStorage.setItem("login", "");
     },
     loadUserProperties(state) {
       const password = localStorage.getItem("password");
       const email = localStorage.getItem("email");
-      const isAuthorized = localStorage.getItem("isAuthorized");
-      if (password !== null && email !== null && isAuthorized !== null) {
-        state.user.password = password;
-        state.user.email = email;
-        state.user.isAuthorized = Boolean(isAuthorized);
-      }
+      const isAuthorizedString = localStorage.getItem("isAuthorized");
+      let isAuthorized = true;
+      if (
+        isAuthorizedString === "false"
+          ? (isAuthorized = false)
+          : (isAuthorized = true)
+      )
+        if (password !== null && email !== null && isAuthorized !== null) {
+          state.user.password = password;
+          state.user.email = email;
+          state.user.isAuthorized = isAuthorized;
+        }
     },
   },
   extraReducers: (builder) => {
@@ -142,6 +101,57 @@ const userSlice = createSlice({
           "isAuthorized",
           state.user.isAuthorized.toString()
         );
+      })
+      .addCase(addFavouriteCities.rejected, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addFavouriteCities.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(loadCities.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadCities.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user.cities = action.payload;
+        localStorage.setItem("cities", JSON.stringify(action.payload));
+      })
+      .addCase(loadPhotoUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadPhotoUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user.photoUser = action.payload;
+        localStorage.setItem("photo", action.payload);
+      })
+      .addCase(changePhotoUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePhotoUser.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(changeUserEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeUserEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user.email = action.payload;
+        localStorage.setItem("email", action.payload);
+      })
+      .addCase(changeUserPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeUserPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user.password = action.payload;
+        localStorage.setItem("password", action.payload);
       });
   },
 });

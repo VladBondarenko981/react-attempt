@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styles from "./AuthWeatherNow.module.css";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { loadWeatherNow } from "../../../store/weatherSlice";
+import { loadWeatherNow } from "../../../store/weatherActions";
+import { addFavouriteCities } from "../../../store/userActions";
 
 type Props = {};
 
@@ -21,6 +22,12 @@ export const AuthWeatherNow = (props: Props) => {
     console.log("Work!");
     dispatch(loadWeatherNow(city));
   };
+  const doubleTwoClick = () => {
+    const email = localStorage.getItem("email");
+    if (email !== null) {
+      dispatch(addFavouriteCities({ city, email }));
+    }
+  };
   return (
     <div className={styles.table}>
       <div className={styles.tableSettingsThird}>
@@ -35,8 +42,7 @@ export const AuthWeatherNow = (props: Props) => {
 
       <div className={styles.tableSettingsFirst}>
         {nameCity}
-        {/* <button onClick={doubleTwoClick}>Add to list</button> */}
-        <button>Add to list</button>
+        <button onClick={doubleTwoClick}>Add to list</button>
       </div>
 
       <div className={styles.tableSettingsSecond}>
