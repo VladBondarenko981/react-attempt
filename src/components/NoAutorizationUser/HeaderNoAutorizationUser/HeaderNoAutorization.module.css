@@ -1,0 +1,36 @@
+.header {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  background-color: rgb(1, 1, 78);
+  display: flex;
+  justify-content: space-between; /* Располагает элементы слева и справа */
+  padding: 10px;
+}
+
+.headers {
+  border: 1px solid white;
+  color: white;
+  padding: 10px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.headersHome {
+  border: 1px solid white;
+  color: white;
+  padding: 10px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+
+  align-self: flex-start;
+  margin-right: auto; /* Это устанавливает автомаргин справа для выравнивания слева */
+}
+
+.header select {
+  border: 1px solid white;
+  color: rgb(0, 0, 0);
+  padding: 10px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}

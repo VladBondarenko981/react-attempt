@@ -1,0 +1,35 @@
+.table {
+  padding: 20px;
+  background-color: rgba(175, 175, 175, 0.7);
+  border-radius: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.tableSettingsFirst {
+  display: flex;
+  gap: 30px;
+  border-radius: 20%;
+  background-color: rgba(16, 71, 80, 0.7);
+  padding: 30px;
+  color: white;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  justify-content: center;
+}
+
+.tableSettingsSecond {
+  display: flex;
+  flex-direction: column;
+  border-radius: 20%;
+  background-color: rgba(235, 255, 134, 0.229);
+  padding: 10px;
+}
+
+.tableSettingsThird {
+  display: flex;
+  gap: 50px;
+}

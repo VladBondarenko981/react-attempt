@@ -1,0 +1,29 @@
+.table {
+  padding: 20px;
+  background-color: rgba(175, 175, 175, 0.7);
+  border-radius: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.tableSettingsFirst {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 20%;
+  background-color: rgba(16, 71, 80, 0.7);
+  padding: 20px;
+}
+
+.tableSettingsSecond {
+  display: flex;
+  gap: 20px;
+}
+
+.tableSettingsFirst img {
+  height: 100px;
+  width: 100px;
+}
