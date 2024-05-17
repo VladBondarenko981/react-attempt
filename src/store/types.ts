@@ -10,10 +10,6 @@ export type loginPayload = {
 
 export type loginData = {
   password: string;
-  token: {
-    token: string;
-  };
-  email: string;
   message: string;
 };
 
@@ -24,5 +20,10 @@ export type GeoData = {
 
 export type FavouriteCities = {
   city: string;
+  password: string;
+};
+
+export type UserInfo = {
   email: string;
+  password: string;
 };

@@ -36,9 +36,9 @@ function App() {
 
   useEffect(() => {
     dispatch(loadUserProperties());
-    const email = localStorage.getItem("email");
-    if (email) {
-      dispatch(loadCities(email));
+    const password = localStorage.getItem("password");
+    if (password) {
+      dispatch(loadCities(password));
     }
   }, [dispatch]);
 

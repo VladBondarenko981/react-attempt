@@ -8,7 +8,7 @@ type Props = {};
 
 export const SignUpComponent = (props: Props) => {
   const dispatch = useAppDispatch();
-  const error = useAppSelector((state) => state.user.error);
+  const userStatus = useAppSelector((state) => state.user.userStatus);
   const [email, setEmail] = useState("");
   const [firstPassword, setFirstPassword] = useState("");
   const [secondPassword, setSecondPassword] = useState("");
@@ -20,8 +20,8 @@ export const SignUpComponent = (props: Props) => {
         password: firstPassword,
       };
       dispatch(registration(registrationPayload));
-      console.log(error);
-      if (error == "You have successfully registered") {
+      console.log(userStatus);
+      if (userStatus == "You have successfully registered") {
         setTimeout(() => {
           window.location.href = "http://localhost:3000/logIn"; // Переход на страницу логина через 5 секунд
         }, 2000);
@@ -53,7 +53,7 @@ export const SignUpComponent = (props: Props) => {
             value={secondPassword}
             onChange={(e) => setSecondPassword(e.target.value)}
           />
-          <h1>{error}</h1>
+          <h1>{userStatus}</h1>
         </div>
         <div className={styles.tableThree}>
           <button onClick={handledClick}>Sign Up</button>

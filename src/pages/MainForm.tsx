@@ -11,11 +11,10 @@ import { useAppSelector } from "../hooks/hooks";
 type Props = {};
 
 export const MainForm = (props: Props) => {
-  const status = useAppSelector((state) => state.user.user.isAuthorized);
-  console.log(status);
+  const isAuthorized = useAppSelector((state) => state.user.user.isAuthorized);
   return (
     <div>
-      {status === true ? (
+      {isAuthorized ? (
         <>
           <HeaderAutorizationUser />
         </>
@@ -24,7 +23,7 @@ export const MainForm = (props: Props) => {
           <HeaderNoAutorizationUser />
         </>
       )}
-      {status === true ? (
+      {isAuthorized ? (
         <>
           <AuthWeatherNow />
         </>
@@ -34,7 +33,7 @@ export const MainForm = (props: Props) => {
         </>
       )}
       <WeatherFiveDays />
-      {status === true ? (
+      {isAuthorized ? (
         <>
           <AuthDigitalWeather />
         </>

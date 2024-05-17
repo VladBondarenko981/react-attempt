@@ -6,6 +6,7 @@ import {
   FavouriteCities,
 } from "./types";
 import { emplace } from "@reduxjs/toolkit/dist/utils";
+import { UserInfo } from "./types";
 
 export const registration = createAsyncThunk<
   string,
@@ -73,8 +74,7 @@ export const addFavouriteCities = createAsyncThunk<
 >(
   "user/addFavouriteCities",
   async function (favouriteCities, { rejectWithValue }) {
-    const { city, email } = favouriteCities;
-
+    const { city, password } = favouriteCities;
     const response = await fetch(
       "http://localhost:5000/users/addFavouriteCities",
       {
@@ -82,7 +82,7 @@ export const addFavouriteCities = createAsyncThunk<
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ city, email }),
+        body: JSON.stringify({ city, password }),
       }
     );
 
@@ -101,13 +101,13 @@ export const addFavouriteCities = createAsyncThunk<
 
 export const loadCities = createAsyncThunk<[], string, { rejectValue: string }>(
   "users/loadCities",
-  async function (email, { rejectWithValue }) {
+  async function (password, { rejectWithValue }) {
     const response = await fetch("http://localhost:5000/users/loadCities", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ password }),
     });
 
     console.log("Response status:", response.status);
@@ -196,17 +196,17 @@ export const changeUserEmail = createAsyncThunk<
 
 export const changeUserPassword = createAsyncThunk<
   string,
-  { oldPassword: string; newPassword: string; email: string },
+  { password: string; newPassword: string; email: string },
   { rejectValue: string }
 >("auth/changePassword", async function (passwordInfo, { rejectWithValue }) {
-  const { oldPassword, newPassword, email } = passwordInfo;
+  const { password, newPassword, email } = passwordInfo;
   const response = await fetch("http://localhost:5000/auth/changePassword", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
 
-    body: JSON.stringify({ oldPassword, newPassword, email }),
+    body: JSON.stringify({ password, newPassword, email }),
   });
 
   console.log("Response status:", response.status);
@@ -218,15 +218,26 @@ export const changeUserPassword = createAsyncThunk<
   return data;
 });
 
-async function changeEmail(newEmail: string, email: string) {
-  const response = await fetch("http://localhost:5000/auth/changeEmail", {
+export const loadInfoByToken = createAsyncThunk<
+  UserInfo,
+  { password: string },
+  { rejectValue: string }
+>("users/loadInfoByToken", async function (passwordInfo, { rejectWithValue }) {
+  const { password } = passwordInfo;
+  const response = await fetch("http://localhost:5000/users/loadInfoByToken", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ newEmail, email }),
+
+    body: JSON.stringify({ password }),
   });
+
+  console.log("Response status:", response.status);
+
+  if (!response.ok) {
+    return rejectWithValue("Can't load cities.");
+  }
   const data = await response.json();
-  const token = data.token;
-  localStorage.setItem("email", data.email);
-}
+  return data;
+});

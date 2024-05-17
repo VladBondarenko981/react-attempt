@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Profile.module.css";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
@@ -7,20 +7,32 @@ import {
   changeUserEmail,
   changeUserPassword,
 } from "../../../store/userActions";
+import { loadInfoByToken } from "../../../store/userActions";
 
 type Props = {};
 
 export const Profile = (props: Props) => {
-  const [name, setName] = useState(0);
+  const [emailView, setEmailView] = useState(0);
   const [newEmail, setNewEmail] = useState("");
   const handledClick = () => {
-    setName(name + 1);
+    setEmailView(emailView + 1); //If emailView == 1, to show on page "Change Email", else "Set new Email"
   };
+  const email = useAppSelector((state) => state.user.user.email);
+  const password = useAppSelector((state) => state.user.user.password);
   const handledClickTwo = () => {
-    setName(name + 1);
-    const emailFromLocalStorage = localStorage.getItem("email");
-    if (emailFromLocalStorage !== null) {
-      dispatch(changeUserEmail({ newEmail, email: emailFromLocalStorage }));
+    loadEmail();
+    setEmailView(emailView + 1);
+    if (email !== null) {
+      dispatch(changeUserEmail({ newEmail, email: email }));
+    }
+  };
+
+  const loadEmail = () => {
+    const password = localStorage.getItem("password");
+    if (password !== null) {
+      dispatch(loadInfoByToken({ password }));
+    } else {
+      console.error("Password is null");
     }
   };
 
@@ -32,15 +44,16 @@ export const Profile = (props: Props) => {
   };
   const doubleClickTwo = async () => {
     setNameTwo(nameTwo + 1);
-    const passwordFromLocalStorage = localStorage.getItem("password");
-    const email = localStorage.getItem("email");
-    const pass = localStorage.getItem("password");
-    if (passwordFromLocalStorage != null && email != null) {
-      await dispatch(changeUserPassword({ oldPassword, newPassword, email }));
+    const pass = password;
+    if (password != null && email != null) {
+      await dispatch(changeUserPassword({ password, newPassword, email }));
     }
     if (pass == localStorage.getItem("password")) {
       setNameTwo(-1);
     }
+  };
+  const handledClickThree = () => {
+    loadEmail();
   };
   const [selectedFile, setSelectedFile] = useState<string>("");
   const photoUser = useAppSelector((state) => state.user.user.photoUser);
@@ -89,10 +102,11 @@ export const Profile = (props: Props) => {
 
       <div className={styles.partTwo}>
         <div className={styles.partTwoOne}>
-          {name % 2 == 0 ? (
+          {emailView % 2 == 0 ? (
             <>
-              <h1>{localStorage.getItem("email")}</h1>
+              <h1>{email}</h1>
               <button onClick={handledClick}>Change Email</button>
+              <button onClick={handledClickThree}>Show Email</button>
             </>
           ) : (
             <>

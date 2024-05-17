@@ -7,10 +7,10 @@ import { useAppSelector } from "../hooks/hooks";
 type Props = {};
 
 export const LogIn = (props: Props) => {
-  const status = useAppSelector((state) => state.user.user.isAuthorized);
+  const isAuthorized = useAppSelector((state) => state.user.user.isAuthorized);
   return (
     <div>
-      {status === true ? (
+      {isAuthorized ? (
         <>
           <HeaderAutorizationUser />
         </>

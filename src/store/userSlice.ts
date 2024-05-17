@@ -8,8 +8,10 @@ import {
   changePhotoUser,
   changeUserEmail,
   changeUserPassword,
+  loadInfoByToken,
 } from "./userActions";
 import { act } from "react-dom/test-utils";
+import { useAppDispatch } from "../hooks/hooks";
 
 type User = {
   password: string;
@@ -23,7 +25,7 @@ type User = {
 type UserState = {
   user: User;
   loading: boolean;
-  error: string | null;
+  userStatus: string | null;
 };
 
 const initialState: UserState = {
@@ -36,7 +38,7 @@ const initialState: UserState = {
     photoUser: "",
   },
   loading: false,
-  error: null,
+  userStatus: null,
 };
 
 const userSlice = createSlice({
@@ -44,7 +46,7 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     mistakePassword(state, action: PayloadAction<string>) {
-      state.error = action.payload;
+      state.userStatus = action.payload;
     },
     logOut(state, action: PayloadAction<boolean>) {
       state.user.isAuthorized = action.payload;
@@ -54,7 +56,6 @@ const userSlice = createSlice({
     },
     loadUserProperties(state) {
       const password = localStorage.getItem("password");
-      const email = localStorage.getItem("email");
       const isAuthorizedString = localStorage.getItem("isAuthorized");
       let isAuthorized = true;
       if (
@@ -62,9 +63,8 @@ const userSlice = createSlice({
           ? (isAuthorized = false)
           : (isAuthorized = true)
       )
-        if (password !== null && email !== null && isAuthorized !== null) {
+        if (password !== null && isAuthorized !== null) {
           state.user.password = password;
-          state.user.email = email;
           state.user.isAuthorized = isAuthorized;
         }
     },
@@ -73,46 +73,41 @@ const userSlice = createSlice({
     builder
       .addCase(registration.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(registration.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.userStatus = action.payload as string;
       })
       .addCase(registration.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.userStatus = action.payload as string;
       })
       .addCase(login.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user.password = action.payload.password;
-        state.user.email = action.payload.email;
+        state.user.password = JSON.stringify(action.payload.password);
+        localStorage.setItem("password", action.payload.password);
+        localStorage.setItem("isAuthorized", "true");
         state.user.isAuthorized = true;
         if (action.payload.message === "success") {
           state.user.message = "You have successfully login";
         }
-        localStorage.setItem("email", state.user.email);
-        localStorage.setItem("password", state.user.password);
-        localStorage.setItem(
-          "isAuthorized",
-          state.user.isAuthorized.toString()
-        );
       })
       .addCase(addFavouriteCities.rejected, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(addFavouriteCities.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.userStatus = action.payload as string;
       })
       .addCase(loadCities.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(loadCities.fulfilled, (state, action) => {
         state.loading = false;
@@ -121,7 +116,7 @@ const userSlice = createSlice({
       })
       .addCase(loadPhotoUser.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(loadPhotoUser.fulfilled, (state, action) => {
         state.loading = false;
@@ -130,14 +125,14 @@ const userSlice = createSlice({
       })
       .addCase(changePhotoUser.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(changePhotoUser.fulfilled, (state, action) => {
         state.loading = false;
       })
       .addCase(changeUserEmail.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(changeUserEmail.fulfilled, (state, action) => {
         state.loading = false;
@@ -146,12 +141,21 @@ const userSlice = createSlice({
       })
       .addCase(changeUserPassword.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.userStatus = null;
       })
       .addCase(changeUserPassword.fulfilled, (state, action) => {
         state.loading = false;
         state.user.password = action.payload;
         localStorage.setItem("password", action.payload);
+      })
+      .addCase(loadInfoByToken.pending, (state) => {
+        state.loading = true;
+        state.userStatus = null;
+      })
+      .addCase(loadInfoByToken.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user.email = action.payload.email;
+        state.user.password = action.payload.password;
       });
   },
 });

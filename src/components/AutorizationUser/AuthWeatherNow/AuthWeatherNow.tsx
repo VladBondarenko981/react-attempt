@@ -23,9 +23,9 @@ export const AuthWeatherNow = (props: Props) => {
     dispatch(loadWeatherNow(city));
   };
   const doubleTwoClick = () => {
-    const email = localStorage.getItem("email");
-    if (email !== null) {
-      dispatch(addFavouriteCities({ city, email }));
+    const password = localStorage.getItem("password");
+    if (password !== null) {
+      dispatch(addFavouriteCities({ city, password }));
     }
   };
   return (
